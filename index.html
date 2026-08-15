@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Niña Hermosa 💖</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts elegantes -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=700&family=Quicksand:wght=400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at top, #090d16 0%, #02040a 100%);
+            color: #f1f5f9;
+        }
+        .romantic-font {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        /* Efecto de estrellas flotantes */
+        @keyframes floatStar {
+            0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.3) rotate(360deg); opacity: 0; }
+        }
+        .star {
+            position: absolute;
+            color: #fde047;
+            animation: floatStar 8s linear infinite;
+            pointer-events: none;
+        }
+        
+        /* Titileo estrellas de fondo */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        .twinkle-bg {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Estrellas fugaces */
+        @keyframes shootingStar {
+            0% { transform: translateX(0) translateY(0) rotate(-45deg) scale(0); opacity: 0; }
+            10% { opacity: 1; scale(1); }
+            90% { opacity: 1; }
+            100% { transform: translateX(350px) translateY(350px) rotate(-45deg) scale(0); opacity: 0; }
+        }
+        .shooting-star {
+            position: fixed;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #fef08a, transparent);
+            animation: shootingStar 2.5s linear forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Ruleta */
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid #fde047;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 30px rgba(253, 224, 71, 0.25);
+        }
+        .pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 24px solid #fde047;
+            z-index: 10;
+        }
+
+        /* SOBRE INTERACTIVO */
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            height: 190px;
+            background-color: #1a163a;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            margin: 40px auto;
+            transition: transform 0.5s ease;
+            border: 2px solid #2e2a5e;
+        }
+        .envelope-flap {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: calc(100% + 4px);
+            height: 0;
+            border-left: 172px solid transparent;
+            border-right: 172px solid transparent;
+            border-top: 105px solid #2e2a5e;
+            transform-origin: top;
+            transition: transform 0.4s ease 0.4s;
+            z-index: 5;
+        }
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            transition: transform 0.4s ease;
+            z-index: 1;
+        }
+        .letter {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: #fffdf5;
+            color: #1a163a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.5s ease;
+            z-index: 2;
+            transform: translateY(0);
+            border: 1px solid #fde047;
+        }
+        .envelope-wrapper.open .letter {
+            transform: translateY(-130px);
+            height: auto;
+            min-height: 270px;
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .open-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+            background-color: #fde047;
+            color: #1a163a;
+            font-weight: bold;
+            padding: 8px 22px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(253, 224, 71, 0.4);
+            transition: all 0.3s;
+        }
+        .envelope-wrapper.open .open-btn {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Foto Glow al tocar */
+        .photo-glow {
+            transition: all 0.4s ease;
+        }
+        .photo-glow:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(253, 224, 71, 0.5);
+            border-color: #fde047;
+        }
+    </style>
+    <!-- Funciones de recuperación de imágenes en el Head para que estén listas de inmediato -->
+    <script>
+        function handleInicioError(img) {
+            console.log("Error cargando inicio, probando alternativas para:", img.src);
+            if (img.src.includes('.jpg.jpeg')) {
+                img.src = 'foto_inicio.jpg';
+            } else if (img.src.includes('.jpg')) {
+                img.src = 'foto_inicio.jpeg';
+            } else if (img.src.includes('.jpeg')) {
+                img.src = 'foto_inicio.png';
+            } else {
+                img.style.display = 'none';
+                img.parentElement.innerHTML = `<span class="romantic-font text-yellow-300 font-bold text-center text-sm p-4">Nosotros 🌙</span>`;
+            }
+        }
+
+        function handleCierreError(img) {
+            console.log("Error cargando cierre, probando alternativas para:", img.src);
+            if (img.src.includes('.jpg.jpeg')) {
+                img.src = 'foto17.jpg';
+            } else if (img.src.includes('.jpg')) {
+                img.src = 'foto17.jpeg';
+            } else if (img.src.includes('.jpeg')) {
+                img.src = 'foto17.png';
+            } else {
+                img.style.display = 'none';
+                img.parentElement.innerHTML = `<span class="romantic-font text-yellow-300 font-bold text-center text-sm p-4">Amor Eterno ❤️</span>`;
+            }
+        }
+    </script>
+</head>
+<body class="relative overflow-x-hidden pb-20 select-none">
+
+    <!-- Estrellas de fondo -->
+    <div id="stars-background" class="fixed inset-0 pointer-events-none z-0"></div>
+    <div id="stars-bg-floating" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <div class="max-w-md mx-auto px-4 pt-8 relative z-10">
+        
+        <!-- ENCABEZADO CON LUNA INTERACTIVA -->
+        <header class="text-center mb-6 relative">
+            <!-- Luna interactiva -->
+            <button id="moon-btn" class="text-6xl mb-1 focus:outline-none transform active:scale-95 transition-transform inline-block filter drop-shadow-[0_0_15px_rgba(253,224,71,0.5)] cursor-pointer">🌙</button>
+            <div id="moon-bubble" class="hidden bg-yellow-400/10 border border-yellow-400/20 rounded-full py-1.5 px-4 text-xs font-semibold text-yellow-300 max-w-xs mx-auto mb-3 animate-fade-in">
+                ¡Púlsame para ver mis fases de amor! 💖
+            </div>
+            <h1 class="romantic-font text-5xl text-yellow-300 font-bold mb-1 tracking-wide">Para Mi Persona Favorita ✨</h1>
+            <p class="text-gray-300 font-semibold text-xs">Bajo el mismo cielo estrellado, escribiendo nuestro amor.</p>
+        </header>
+
+        <!-- FOTO DE PORTADA ESTILO POLAROID DE CRISTAL -->
+        <section class="mb-6 flex justify-center">
+            <div class="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 shadow-2xl w-64 transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+                <div class="bg-slate-900 rounded-xl aspect-[4/5] overflow-hidden flex items-center justify-center border border-white/10 mb-3">
+                    <img id="img-inicio" src="foto_inicio.jpg.jpeg" alt="Nosotros Inicio" class="w-full h-full object-cover" onerror="handleInicioError(this)">
+                </div>
+                <p class="romantic-font text-center text-xl text-yellow-300 font-bold">Un día como hoy... ❤️</p>
+            </div>
+        </section>
+
+        <!-- NUESTRO CONTEO DE TIEMPO -->
+        <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl mb-6 border border-white/10 text-center">
+            <h2 class="text-md font-bold text-yellow-300 mb-3 tracking-wide">Nuestro Tiempo Juntos 💞</h2>
+            <div class="grid grid-cols-6 gap-1 mb-1">
+                <div class="bg-white/5 p-1.5 rounded-lg border border-white/5">
+                    <span id="years" class="block text-md font-bold text-yellow-300">00</span>
+                    <span class="text-[8px] text-gray-300 font-semibold">Años</span>
+                </div>
+                <div class="bg-white/5 p-1.5 rounded-lg border border-white/5">
+                    <span id="months" class="block text-md font-bold text-yellow-300">00</span>
+                    <span class="text-[8px] text-gray-300 font-semibold">Meses</span>
+                </div>
+                <div class="bg-white/5 p-1.5 rounded-lg border border-white/5">
+                    <span id="days" class="block text-md font-bold text-yellow-300">00</span>
+                    <span class="text-[8px] text-gray-300 font-semibold">Días</span>
+                </div>
+                <div class="bg-white/5 p-1.5 rounded-lg border border-white/5">
+                    <span id="hours" class="block text-md font-bold text-yellow-300">00</span>
+                    <span class="text-[8px] text-gray-300 font-semibold">Horas</span>
+                </div>
+                <div class="bg-white/5 p-1.5 rounded-lg border border-white/5">
+                    <span id="mins" class="block text-md font-bold text-yellow-300">00</span>
+                    <span class="text-[8px] text-gray-300 font-semibold">Mins</span>
+                </div>
+                <div class="bg-white/5 p-1.5 rounded-lg border border-white/5">
+                    <span id="secs" class="block text-md font-bold text-yellow-300">00</span>
+                    <span class="text-[8px] text-gray-300 font-semibold">Segs</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CANCIÓN DE FONDO -->
+        <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl mb-6 border border-white/10 text-center">
+            <h2 class="text-md font-bold text-yellow-300 mb-1">Nuestra Canción 🎵</h2>
+            <p class="text-[10px] text-gray-300 mb-3 font-semibold">Escúchala de fondo mientras navegas 🌙</p>
+            <div class="rounded-xl overflow-hidden shadow-inner border border-yellow-300/10 aspect-video">
+                <iframe class="w-full h-full" 
+                        src="https://www.youtube.com/embed/pb6r1hQLLo8" 
+                        title="Nuestra Canción" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: TRIVIA INTERACTIVA (EL BLOQUEO DE ESTRELLA) -->
+        <section id="trivia-section" class="bg-white/5 backdrop-blur-md rounded-3xl p-6 shadow-2xl mb-8 border-2 border-yellow-400/30 text-center relative">
+            <h2 class="text-xl font-bold text-yellow-300 mb-1">¿Cuánto me conoces? 🧠🌌</h2>
+            <p class="text-[11px] text-gray-300 mb-6 font-semibold">Responde mis 5 preguntas para desbloquear el siguiente nivel...</p>
+            
+            <!-- Barra de progreso -->
+            <div class="w-full bg-slate-900/50 rounded-full h-2 mb-6 border border-white/5 overflow-hidden">
+                <div id="trivia-progress" class="bg-yellow-400 h-full w-1/5 transition-all duration-500"></div>
+            </div>
+
+            <!-- Contenedor de preguntas -->
+            <div id="question-container" class="min-h-[140px] flex flex-col justify-center">
+                <p id="question-text" class="text-md font-bold text-white mb-4"></p>
+                <input type="text" id="answer-input" placeholder="Escribe tu respuesta aquí..." class="w-full bg-slate-950/60 border border-white/20 rounded-full py-2.5 px-5 text-center text-white focus:outline-none focus:border-yellow-300 font-semibold mb-4 text-sm transition-all">
+                <button id="next-q-btn" class="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold py-2 px-6 rounded-full text-xs shadow-md mx-auto active:scale-95 transition-transform uppercase tracking-wider">Verificar</button>
+                <p id="trivia-feedback" class="text-xs font-bold mt-3 min-h-[15px]"></p>
+            </div>
+        </section>
+
+        <!-- TARJETA MODAL DEL REGALO DE PELUCHE (OCULTA POR DEFECTO) -->
+        <div id="prize-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+            <div class="bg-slate-900 border-2 border-yellow-300/50 rounded-3xl p-6 text-center max-w-xs shadow-2xl relative">
+                <span class="text-5xl block mb-3 animate-bounce">🧸✨</span>
+                <h3 class="text-xl font-bold text-yellow-300 mb-3">¡NIVEL DESBLOQUEADO!</h3>
+                <p class="text-gray-200 text-xs font-semibold leading-relaxed mb-6">
+                    Felicidades, mi amor. Demostraste que me conoces a la perfección y que recuerdas cada detalle de nosotros. Te has ganado un peluche hermoso que te está esperando en el mundo real... ¡Reclámaselo a Julián con un beso gigante! 😘
+                </p>
+                <button id="reveal-all-btn" class="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold py-3 px-6 rounded-full text-xs tracking-wider uppercase active:scale-95 transition-transform">
+                    Ver sorpresa completa 🌌💖
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= CONTENIDO BLOQUEADO (SE DESBLOQUEA DESPUÉS DEL JUEGO) ================= -->
+        <div id="locked-content" class="hidden space-y-6">
+
+            <!-- SECCIÓN: CARTA DE AMOR EN SOBRE -->
+            <section class="text-center py-4">
+                <h2 class="text-xl font-bold text-yellow-200 mb-1">Una Carta Para Ti 💌</h2>
+                <p class="text-[10px] text-gray-300 mb-4 font-semibold">Presiona la etiqueta dorada para abrir tu carta especial</p>
+                
+                <div id="envelope" class="envelope-wrapper">
+                    <div class="envelope-flap"></div>
+                    <div class="letter text-left flex flex-col justify-between">
+                        <div>
+                            <span class="romantic-font text-3xl text-indigo-900 font-bold block mb-4">Mi niña hermosa,</span>
+                            <p class="text-gray-800 text-xs leading-relaxed font-bold italic text-justify">
+                                ERES LO MEJOR QUE ME HA PASADO. CADA DÍA A TU LADO ES UN REGALO, Y TE ELIJO A TI, TODOS LOS DÍAS PARA SIEMPRE. 🌙❤️
+                            </p>
+                            <p class="text-gray-800 text-xs leading-relaxed font-bold italic mt-4 text-justify">
+                                DE LO QUE SEA QUE ESTÉN HECHAS LAS ALMAS, LA SUYA Y LA MIA SON LO MISMO.
+                            </p>
+                        </div>
+                        <div class="text-right mt-4">
+                            <span class="text-[10px] text-gray-500 block">Con todo mi amor,</span>
+                            <span class="romantic-font text-xl text-purple-700 font-bold block">Julián</span>
+                        </div>
+                    </div>
+                    <button id="open-envelope-btn" class="open-btn hover:scale-105 active:scale-95">abrir carta ✨✉️</button>
+                </div>
+            </section>
+
+            <!-- LO QUE MÁS AMO DE ELLA -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10">
+                <h2 class="text-md font-bold text-yellow-300 text-center mb-4 tracking-wide">Lo que más amo de Carolina ❤️</h2>
+                <ul class="space-y-2.5 font-semibold text-gray-200 text-xs pl-2">
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tu paciencia conmigo</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tu sonrisa</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tu valentía</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tu forma de amarme</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tus besos</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tus abrazos</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tus consejos</li>
+                    <li class="flex items-center gap-3"><span class="text-yellow-400">✨</span> Tus regaños</li>
+                </ul>
+            </section>
+
+            <!-- COSAS QUE QUIERO HACER CONTIGO -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10">
+                <h2 class="text-md font-bold text-yellow-300 text-center mb-4 tracking-wide">Cosas que quiero hacer contigo 🗺️✨</h2>
+                <ul class="space-y-3 font-semibold text-gray-200 text-xs pl-2">
+                    <li class="flex items-start gap-3">
+                        <span class="text-yellow-400 text-sm">✈️</span>
+                        <span>Viajar juntos</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-yellow-400 text-sm">🏡</span>
+                        <span>Vivir juntos</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-yellow-400 text-sm">🎓</span>
+                        <span>Verte lograr tus metas</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-yellow-400 text-sm">👨‍👩‍👧‍👦</span>
+                        <span>Tener un hogar con hijos</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-yellow-400 text-sm">👵👴</span>
+                        <span>Vivir contigo hasta que nos alcance la vida</span>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- FECHAS IMPORTANTES (LÍNEA DE TIEMPO) -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10">
+                <h2 class="text-md font-bold text-yellow-300 text-center mb-5 tracking-wide">Nuestras Fechas Especiales 🗓️</h2>
+                <div class="space-y-4 border-l-2 border-yellow-300/30 ml-3 pl-4 relative">
+                    <div class="relative">
+                        <div class="absolute -left-[21px] top-1 bg-yellow-400 w-2.5 h-2.5 rounded-full border border-slate-950"></div>
+                        <h3 class="font-bold text-yellow-300 text-xs">23 de Marzo de 2024</h3>
+                        <p class="text-gray-300 text-[10px] font-semibold mt-0.5">Me entraste a tu cuarto por la ventana 🤫🚪</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[21px] top-1 bg-yellow-400 w-2.5 h-2.5 rounded-full border border-slate-950"></div>
+                        <h3 class="font-bold text-yellow-300 text-xs">13 de Julio de 2024</h3>
+                        <p class="text-gray-300 text-[10px] font-semibold mt-0.5">Entré a tu casa por primera vez como tu novio 🏡💞</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[21px] top-1 bg-yellow-400 w-2.5 h-2.5 rounded-full border border-slate-950"></div>
+                        <h3 class="font-bold text-yellow-300 text-xs">23 de Enero de 2025</h3>
+                        <p class="text-gray-300 text-[10px] font-semibold mt-0.5">¡Nuestro primer año de novios oficiales! 💖🌹</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RULETA DE VALES -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10 text-center flex flex-col items-center">
+                <h2 class="text-md font-bold text-yellow-300 mb-1 tracking-wide">🎟️ Ruleta de Vales Románticos</h2>
+                <p class="text-[10px] text-gray-300 mb-4 font-semibold">¡Gira la ruleta y reclama tu premio de hoy!</p>
+                
+                <div class="wheel-container mb-4">
+                    <div class="pointer"></div>
+                    <div id="wheel" class="wheel" style="background: conic-gradient(
+                        #2e1a47 0deg 45deg, 
+                        #4338ca 45deg 90deg, 
+                        #1e3a8a 90deg 135deg, 
+                        #0369a1 135deg 180deg, 
+                        #0284c7 180deg 225deg, 
+                        #4f46e5 225deg 270deg, 
+                        #312e81 270deg 315deg, 
+                        #1d4ed8 315deg 360deg
+                    );">
+                        <div class="absolute inset-0 flex items-center justify-center font-bold text-[7.5px] text-yellow-100">
+                            <span style="position: absolute; transform: rotate(22.5deg) translateY(-85px);">Cena Cama</span>
+                            <span style="position: absolute; transform: rotate(67.5deg) translateY(-85px);">Beso</span>
+                            <span style="position: absolute; transform: rotate(112.5deg) translateY(-85px);">Masaje</span>
+                            <span style="position: absolute; transform: rotate(157.5deg) translateY(-85px);">Con Hielo</span>
+                            <span style="position: absolute; transform: rotate(157.5deg) translateY(-85px);">Con Hielo</span>
+                            <span style="position: absolute; transform: rotate(202.5deg) translateY(-85px);">Peli Elige</span>
+                            <span style="position: absolute; transform: rotate(247.5deg) translateY(-85px);">Helado</span>
+                            <span style="position: absolute; transform: rotate(292.5deg) translateY(-85px);">Baño</span>
+                            <span style="position: absolute; transform: rotate(337.5deg) translateY(-85px);">Desayuno</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="spin-btn" class="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold py-2.5 px-6 rounded-full text-xs shadow-lg transform active:scale-95 transition-all mb-3">
+                    GIRAR 🎰
+                </button>
+
+                <div id="result-box" class="hidden bg-white/5 border border-yellow-300/20 rounded-xl p-3 w-full">
+                    <p class="text-[9px] text-yellow-400 font-bold uppercase tracking-wider">¡Premio Ganado!</p>
+                    <p id="winner-text" class="text-sm font-bold text-white mt-1"></p>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: GALERÍA DE FOTOS GLOW (16 FOTOS) -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10">
+                <h2 class="text-md font-bold text-yellow-300 text-center mb-4 tracking-wide">Nuestras Fotos Favoritas 📸</h2>
+                <div id="gallery-grid" class="grid grid-cols-2 gap-2.5"></div>
+            </section>
+
+            <!-- NUEVA SECCIÓN PREMIUM: EL BUZÓN DE LOS DESEOS 💫 -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10 text-center">
+                <span class="text-3xl block mb-2">💫</span>
+                <h2 class="text-md font-bold text-yellow-300 mb-1">Deseo a una Estrella Fugaz</h2>
+                <p class="text-[10px] text-gray-300 mb-4 font-semibold">Pídele un deseo al universo... Julián lo escuchará.</p>
+                
+                <div id="wish-form" class="space-y-3">
+                    <textarea id="wish-text" placeholder="Escribe aquí tu deseo de amor..." class="w-full bg-slate-950/60 border border-white/20 rounded-xl p-3 text-white text-xs focus:outline-none focus:border-yellow-300 font-semibold h-16 resize-none transition-all"></textarea>
+                    <button id="wish-btn" class="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold py-2 px-6 rounded-full text-xs shadow-md active:scale-95 transition-transform">PEDIR DESEO ✨</button>
+                </div>
+
+                <div id="wish-success" class="hidden bg-yellow-400/10 border border-yellow-300/20 rounded-xl p-4 animate-fade-in">
+                    <p class="text-xs font-bold text-yellow-300 leading-relaxed">
+                        Tu deseo ha sido enviado al cielo... 🌌 y Julián ya está trabajando en secreto con el universo para hacértelo realidad. ❤️
+                    </p>
+                </div>
+            </section>
+
+            <!-- PREGUNTA TRAVIESA (BOTÓN NO ESCURRIDIZO) -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10 text-center relative overflow-hidden">
+                <h2 class="text-md font-bold text-yellow-300 mb-2">Una pregunta muy seria... 🤔</h2>
+                <p class="text-xs text-gray-200 font-semibold mb-4">¿Quieres compartir una vida entera conmigo?</p>
+                
+                <div class="flex justify-center gap-4 items-center min-h-[40px] relative">
+                    <button id="yes-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-6 rounded-full text-xs shadow-md transform active:scale-95 transition-all z-10">
+                        SÍ 😍
+                    </button>
+                    <button id="no-btn" class="bg-rose-600 text-white font-bold py-2 px-6 rounded-full text-xs shadow-md z-20 transition-all">
+                        NO 😢
+                    </button>
+                </div>
+
+                <div id="yes-alert" class="hidden bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-3 mt-4">
+                    <p class="text-xs font-bold text-emerald-300">¡SABÍA QUE DIRÍAS QUE SÍ! ¡TE AMO INFINITO! 👩‍❤️‍👨💖💍</p>
+                </div>
+            </section>
+
+            <!-- CIERRE DE GALA (FOTO 17) -->
+            <section class="bg-white/5 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-white/10 text-center">
+                <div class="bg-slate-900 rounded-2xl h-56 overflow-hidden shadow-inner flex items-center justify-center border-2 border-white/20 mb-4">
+                    <img id="img-cierre" src="foto17.jpg.jpeg" alt="Nosotros Cierre" class="w-full h-full object-cover" onerror="handleCierreError(this)">
+                </div>
+                <p class="romantic-font text-3xl text-yellow-300 font-bold mb-2">Carolina, por todo lo que somos te amo.</p>
+                <p class="text-gray-300 font-bold text-xs tracking-wide">Con muchísimo cariño, Julián</p>
+                <p class="text-[10px] text-yellow-400 font-semibold mt-2.5">🌙 para siempre ❤️ 23/01/2024 - ♾️</p>
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DE FUNCIONAMIENTO COMPLETO -->
+    <script>
+        // FECHA DE INICIO DE LA RELACIÓN: 23 de Enero de 2024
+        const FECHA_INICIO = new Date(2024, 0, 23, 0, 0, 0); 
+
+        // PREMIOS DE LA RULETA
+        const VALES = [
+            "🛏️ Una deliciosa Cena en la Cama preparada por mí",
+            "💋 Un Beso gigante en el lugar que tú elijas",
+            "💆 Un Masaje relajante para consentirte",
+            "❄️ Un refrescante y divertido Masaje con Hielo",
+            "🎬 Una tarde de Película (¡tú la eliges y yo llevo las botanas!)",
+            "🍦 Un Helado gigante de tu sabor preferido",
+            "🛁 Un relajante Baño juntos para desconectar del mundo",
+            "🥞 Un espectacular Desayuno en la Cama por la mañana"
+        ];
+
+        // PREGUNTAS DE LA TRIVIA
+        const TRIVIA_DATA = [
+            {
+                q: "¿Cuál es mi apodo favorito para ti? 🤔",
+                a: ["mugre"]
+            },
+            {
+                q: "¿Quién dio el primer beso? 💋",
+                a: ["ella", "yo", "mi"]
+            },
+            {
+                q: "¿Qué parte de tu cuerpo me gusta más? 😏",
+                a: ["las chichis", "chichis", "pechos", "senos"]
+            },
+            {
+                q: "¿Con qué regalo me hiciste sentir especial y niño de nuevo? 🏎️🧸",
+                a: ["carro", "carrito", "carro de juguete", "carrito de juguete"]
+            },
+            {
+                q: "¿Qué me robaba con frecuencia cuando dormía contigo? 🧦😴",
+                a: ["medias", "las medias", "calcetines", "los calcetines"]
+            }
+        ];
+
+        // LUNA INTERACTIVA MENSAJES
+        const MOON_PHASES = [
+            "Te amo de aquí a la luna en todas sus fases. 🌒",
+            "Eres mi noche estrellada favorita. 🌓",
+            "Bajo el mismo cielo, siempre tú. 🌔",
+            "Mi universo entero se resume en tu sonrisa. 🌕",
+            "La estrella que ilumina mi noche más oscura. 🪐"
+        ];
+        let moonClickCount = 0;
+        const moonBtn = document.getElementById("moon-btn");
+        const moonBubble = document.getElementById("moon-bubble");
+
+        moonBtn.addEventListener("click", () => {
+            moonBubble.classList.remove("hidden");
+            moonBubble.innerText = MOON_PHASES[moonClickCount % MOON_PHASES.length];
+            moonClickCount++;
+        });
+
+        // MANEJO DE LA TRIVIA
+        let currentQ = 0;
+        const qText = document.getElementById("question-text");
+        const answerInput = document.getElementById("answer-input");
+        const nextBtn = document.getElementById("next-q-btn");
+        const feedback = document.getElementById("trivia-feedback");
+        const progress = document.getElementById("trivia-progress");
+        const triviaSection = document.getElementById("trivia-section");
+        const prizeModal = document.getElementById("prize-modal");
+
+        function loadQuestion() {
+            if (currentQ < TRIVIA_DATA.length) {
+                qText.innerText = TRIVIA_DATA[currentQ].q;
+                answerInput.value = "";
+                feedback.innerText = "";
+                feedback.className = "text-xs font-bold mt-3 min-h-[15px]";
+                progress.style.width = ((currentQ + 1) / TRIVIA_DATA.length) * 100 + "%";
+            }
+        }
+
+        nextBtn.addEventListener("click", checkAnswer);
+        answerInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") checkAnswer();
+        });
+
+        function checkAnswer() {
+            const userAns = answerInput.value.toLowerCase().trim();
+            if (userAns === "") {
+                feedback.innerText = "¡Escribe algo, mi amor! 😘";
+                feedback.className = "text-xs font-bold mt-3 min-h-[15px] text-yellow-400";
+                return;
+            }
+
+            const correctAnswers = TRIVIA_DATA[currentQ].a;
+            const isCorrect = correctAnswers.some(ans => userAns.includes(ans));
+
+            if (isCorrect) {
+                feedback.innerText = "¡Correcto! ✨ Inteligente mi niña.";
+                feedback.className = "text-xs font-bold mt-3 min-h-[15px] text-emerald-400 animate-pulse";
+                currentQ++;
+                
+                setTimeout(() => {
+                    if (currentQ < TRIVIA_DATA.length) {
+                        loadQuestion();
+                    } else {
+                        // Completado: Mostrar Modal de Premio Física
+                        prizeModal.classList.remove("hidden");
+                        for(let i=0; i<40; i++) {
+                            setTimeout(createFloatingStar, i * 80);
+                        }
+                    }
+                }, 1000);
+            } else {
+                feedback.innerText = "¡Nop! Intenta de nuevo... Yo sé que te acuerdas 🥺";
+                feedback.className = "text-xs font-bold mt-3 min-h-[15px] text-rose-400";
+                // Efecto sacudir
+                triviaSection.classList.add("animate-bounce");
+                setTimeout(() => triviaSection.classList.remove("animate-bounce"), 800);
+            }
+        }
+        loadQuestion();
+
+        // REVELADO DE TODO EL CONTENIDO
+        const revealAllBtn = document.getElementById("reveal-all-btn");
+        const lockedContent = document.getElementById("locked-content");
+
+        revealAllBtn.addEventListener("click", () => {
+            prizeModal.classList.add("hidden");
+            triviaSection.classList.add("hidden"); // Ocultamos trivia jugada
+            lockedContent.classList.remove("hidden");
+            
+            // Scroll suave hacia abajo
+            setTimeout(() => {
+                window.scrollBy({ top: 150, behavior: 'smooth' });
+            }, 100);
+        });
+
+        // DIBUJAR LA GALERÍA DE 16 FOTOS AUTOMÁTICAMENTE CON INTELIGENCIA DE DETECCIÓN EXTENSIÓN
+        const gridContainer = document.getElementById("gallery-grid");
+        for (let i = 1; i <= 16; i++) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "bg-white/5 rounded-xl h-36 overflow-hidden flex items-center justify-center border border-white/10 photo-glow cursor-pointer";
+            
+            const img = document.createElement("img");
+            img.src = `foto${i}.jpg.jpeg`;
+            img.alt = `Nosotros ${i}`;
+            img.className = "w-full h-full object-cover";
+            
+            img.onerror = function() {
+                console.log(`Error en foto${i}, intentando alternativas.`);
+                if (this.src.includes('.jpg.jpeg')) {
+                    this.src = `foto${i}.jpg`;
+                } else if (this.src.includes('.jpg')) {
+                    this.src = `foto${i}.jpeg`;
+                } else if (this.src.includes('.jpeg')) {
+                    this.src = `foto${i}.png`;
+                } else {
+                    this.style.display = 'none';
+                    wrapper.innerHTML = `<span class="text-[9px] text-yellow-300/60 font-bold p-1 text-center">Foto ${i} 📸</span>`;
+                }
+            };
+            
+            wrapper.appendChild(img);
+            gridContainer.appendChild(wrapper);
+        }
+
+        // CONTROL SOBRE INTERACTIVO
+        const envelope = document.getElementById("envelope");
+        const openEnvelopeBtn = document.getElementById("open-envelope-btn");
+        openEnvelopeBtn.addEventListener("click", () => {
+            envelope.classList.add("open");
+        });
+
+        // CONTROL CONTADOR DE TIEMPO EXACTO
+        function updateCounter() {
+            const now = new Date();
+            
+            let years = now.getFullYear() - FECHA_INICIO.getFullYear();
+            let months = now.getMonth() - FECHA_INICIO.getMonth();
+            let days = now.getDate() - FECHA_INICIO.getDate();
+            
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            const diffHours = Math.floor(((now - FECHA_INICIO) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const diffMins = Math.floor(((now - FECHA_INICIO) % (1000 * 60 * 60)) / (1000 * 60));
+            const diffSecs = Math.floor(((now - FECHA_INICIO) % (1000 * 60)) / 1000);
+
+            document.getElementById("years").innerText = String(years).padStart(2, '0');
+            document.getElementById("months").innerText = String(months).padStart(2, '0');
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(diffHours).padStart(2, '0');
+            document.getElementById("mins").innerText = String(diffMins).padStart(2, '0');
+            document.getElementById("secs").innerText = String(diffSecs).padStart(2, '0');
+        }
+        setInterval(updateCounter, 1000);
+        updateCounter();
+
+        // BUZÓN DE DESEOS
+        const wishText = document.getElementById("wish-text");
+        const wishBtn = document.getElementById("wish-btn");
+        const wishForm = document.getElementById("wish-form");
+        const wishSuccess = document.getElementById("wish-success");
+
+        wishBtn.addEventListener("click", () => {
+            if (wishText.value.trim() !== "") {
+                wishForm.classList.add("hidden");
+                wishSuccess.classList.remove("hidden");
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(createFloatingStar, i * 150);
+                }
+            }
+        });
+
+        // CONTROL DE LA RULETA
+        const wheel = document.getElementById("wheel");
+        const spinBtn = document.getElementById("spin-btn");
+        const resultBox = document.getElementById("result-box");
+        const winnerText = document.getElementById("winner-text");
+        let isSpinning = false;
+
+        spinBtn.addEventListener("click", () => {
+            if (isSpinning) return;
+            isSpinning = true;
+            resultBox.classList.add("hidden");
+
+            const randomDegrees = Math.floor(Math.random() * 360);
+            const totalDegrees = 1800 + randomDegrees; 
+            
+            wheel.style.transform = `rotate(${totalDegrees}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                const actualDegree = (360 - (randomDegrees % 360)) % 360;
+                const segmentIndex = Math.floor(actualDegree / 45); 
+                
+                winnerText.innerText = VALES[segmentIndex];
+                resultBox.classList.remove("hidden");
+                
+                wheel.style.transition = "none";
+                wheel.style.transform = `rotate(${randomDegrees}deg)`;
+                wheel.offsetHeight; 
+                wheel.style.transition = "transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+            }, 4500);
+        });
+
+        // BOTÓN TRAVIESO NO
+        const noBtn = document.getElementById("no-btn");
+        const yesBtn = document.getElementById("yes-btn");
+        const yesAlert = document.getElementById("yes-alert");
+
+        function moveNoButton() {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 30);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 30);
+            
+            noBtn.style.position = "fixed";
+            noBtn.style.left = x + "px";
+            noBtn.style.top = y + "px";
+        }
+        noBtn.addEventListener("mouseover", moveNoButton);
+        noBtn.addEventListener("touchstart", (e) => {
+            e.preventDefault(); 
+            moveNoButton();
+        });
+
+        yesBtn.addEventListener("click", () => {
+            yesAlert.classList.remove("hidden");
+            for(let i=0; i<30; i++) {
+                setTimeout(createFloatingStar, i * 100);
+            }
+        });
+
+        // ESTRELLAS DE FONDO TITILANTES
+        const starsBackground = document.getElementById("stars-background");
+        for (let i = 0; i < 65; i++) {
+            const star = document.createElement("div");
+            star.className = "twinkle-bg";
+            star.style.left = Math.random() * 100 + "vw";
+            star.style.top = Math.random() * 100 + "vh";
+            star.style.animationDelay = Math.random() * 3 + "s";
+            star.style.transform = `scale(${Math.random() * 1.5})`;
+            starsBackground.appendChild(star);
+        }
+
+        // ESTRELLAS FLOTANTES
+        const starsBgFloating = document.getElementById("stars-bg-floating");
+        function createFloatingStar() {
+            const star = document.createElement("div");
+            star.classList.add("star");
+            star.innerHTML = "⭐";
+            star.style.left = Math.random() * 100 + "vw";
+            star.style.top = "100vh";
+            star.style.animationDuration = Math.random() * 4 + 4 + "s";
+            star.style.fontSize = Math.random() * 12 + 10 + "px";
+            starsBgFloating.appendChild(star);
+            setTimeout(() => { star.remove(); }, 8000);
+        }
+        setInterval(createFloatingStar, 380);
+
+        // EFECTO ESTRELLAS FUGACES PERIODICAS
+        function createShootingStar() {
+            const star = document.createElement("div");
+            star.classList.add("shooting-star");
+            star.style.left = Math.random() * 70 + "vw";
+            star.style.top = Math.random() * 40 + "vh";
+            document.body.appendChild(star);
+            setTimeout(() => { star.remove(); }, 2500);
+        }
+        // Crea una estrella fugaz cada 18 segundos
+        setInterval(createShootingStar, 18000);
+    </script>
+</body>
+</html>
